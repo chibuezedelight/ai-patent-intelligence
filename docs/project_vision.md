@@ -35,6 +35,7 @@ They pay for patent intelligence to track competitors, ensure freedom-to-operate
 - ams OSRAM
 - Broadcom
 - Nokia Bell Labs
+- umicore
 
 ---
 
