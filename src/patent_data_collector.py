@@ -1,3 +1,33 @@
+import os
+import time
+import xml.etree.ElementTree as ET
+
+import requests
+from dotenv import load_dotenv
+
+AUTH_URL = "https://ops.epo.org/3.2/auth/accesstoken"
+SEARCH_URL = "https://ops.epo.org/3.2/rest-services/published-data/search"
+NS = {"ops": "http://ops.epo.org", "ex": "http://www.epo.org/exchange"}
+
+
+def get_token():
+    """Ask the EPO for a temporary access token."""
+    load_dotenv()
+    key = os.getenv("EPO_CONSUMER_KEY")
+    secret = os.getenv("EPO_CONSUMER_SECRET")
+    if not key or not secret:
+        raise ValueError("Missing EPO_CONSUMER_KEY or EPO_CONSUMER_SECRET in .env")
+
+    response = requests.post(
+        AUTH_URL,
+        auth=(key, secret),
+        data={"grant_type": "client_credentials"},
+        timeout=30,
+    )
+    response.raise_for_status()
+    return response.json()["access_token"]
+
+
 def _get(url, token, params, retries=3):
     """GET request that waits and retries when the EPO says we are going too fast."""
     for attempt in range(retries + 1):
